@@ -24,9 +24,18 @@ mofron.effect.HrzPos = class extends mofron.Effect {
     enable (cmp) {
         try {
             if (true === mofron.func.isInclude(cmp, 'Text')) {
-                cmp.style({
-                    'text-align' : this.type()
-                });
+                if ((null !== cmp.target().parent()) && ('flex' === cmp.target().parent().style('display'))) {
+                    if ('center' === this.type()) {
+                        cmp.style({
+                            'margin-right' : 'auto',
+                            'margin-left'  : 'auto'
+                        });
+                    }
+                } else {
+                    cmp.style({
+                        'text-align' : this.type()
+                    });
+                }
                 return;
             }
             
