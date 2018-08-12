@@ -24,37 +24,66 @@ mofron.effect.HrzPos = class extends mofron.Effect {
     enable (cmp) {
         try {
             if (true === mofron.func.isInclude(cmp, 'Text')) {
-                if ((null !== cmp.target().parent()) && ('flex' === cmp.target().parent().style('display'))) {
-                    if ('center' === this.type()) {
-                        cmp.style({
-                            'margin-right' : 'auto',
-                            'margin-left'  : 'auto'
-                        });
-                    }
-                } else {
+                this.text(cmp,true);
+            } else {
+                this.other(cmp, true);
+            }
+        } catch (e) {
+            console.error(e.stack);
+            throw e;
+        }
+    }
+    
+    text (cmp, flg) {
+        try {
+            if ((null !== cmp.target().parent()) && ('flex' === cmp.target().parent().style('display'))) {
+                if ('center' === this.type()) {
                     cmp.style({
-                        'text-align' : this.type()
+                        'margin-right' : (true === flg) ? 'auto' : null,
+                        'margin-left'  : (true === flg) ? 'auto' : null
                     });
                 }
-                return;
-            }
-            
-            if ('left' === this.type()) {
+            } else {
                 cmp.style({
-                    'margin-right' : 'auto',
-                    'margin-left'  : '0px'
+                    'text-align' : (true === flg) ? this.type() : null
                 });
+            }
+        } catch (e) {
+            console.error(e.stack);
+            throw e;
+        }
+    }
+    
+    other (cmp, flg) {
+        try {
+            if ('left' === this.type()) {
+                if ('absolute' === cmp.style('position')) {
+                    cmp.style({
+                        'left' : (true === flg) ? '0' + cmp.sizeType() : null,
+                    });
+                } else {
+                    cmp.style({
+                        'margin-right' : (true === flg) ? 'auto' : null,
+                        'margin-left'  : (true === flg) ? '0' + cmp.sizeType() : null
+                    });
+                }
             } else if ('center' === this.type()) {
                 cmp.style({
-                    'margin-right' : 'auto',
-                    'margin-left'  : 'auto'
+                    'margin-right' : (true === flg) ? 'auto' : null,
+                    'margin-left'  : (true === flg) ? 'auto' : null
                 });
             } else if ('right' === this.type()) {
-                cmp.style({
-                    'margin-right' : '0px',
-                    'margin-left'  : 'auto'
-                });
-            }
+                if ('absolute' === cmp.style('position')) {
+                    cmp.style({
+                        'right' : (true === flg) ? '0' + cmp.sizeType() : null,
+                    });
+                } else {
+                    cmp.style({
+                        'margin-right' : (true === flg) ? '0' + cmp.sizeType()  : null,
+                        'margin-left'  : (true === flg) ? 'auto' : null
+                    });
+                }
+            } 
         } catch (e) {
             console.error(e.stack);
             throw e;
@@ -64,14 +93,9 @@ mofron.effect.HrzPos = class extends mofron.Effect {
     disable (cmp) {
         try {
             if (true === mofron.func.isInclude(cmp, 'Text')) {
-                cmp.style({
-                    'text-align' : null
-                });
+                this.text(cmp, false);
             } else {
-                cmp.style({
-                    'margin-right' : null,
-                    'margin-left'  : null
-                });
+                this.other(cmp, false);
             }
         } catch (e) {
             console.error(e.stack);
