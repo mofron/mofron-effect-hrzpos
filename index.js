@@ -2,12 +2,12 @@
  * @file mofron-effect-position/index.js
  * @author simpart
  */
-
+const mf = require('mofron');
 /**
  * @class mofron.effect.Position
  * @brief horizon position of component effect class
  */
-mofron.effect.HrzPos = class extends mofron.Effect {
+mf.effect.HrzPos = class extends mf.Effect {
     
     constructor (po) {
         try {
@@ -23,7 +23,7 @@ mofron.effect.HrzPos = class extends mofron.Effect {
     
     enable (cmp) {
         try {
-            if (true === mofron.func.isInclude(cmp, 'Text')) {
+            if (true === mf.func.isInclude(cmp, 'Text')) {
                 this.text(cmp,true);
             } else {
                 this.other(cmp, true);
@@ -68,10 +68,33 @@ mofron.effect.HrzPos = class extends mofron.Effect {
                     });
                 }
             } else if ('center' === this.type()) {
-                cmp.style({
-                    'margin-right' : (true === flg) ? 'auto' : null,
-                    'margin-left'  : (true === flg) ? 'auto' : null
-                });
+                
+                if (null === cmp.parent()) {
+                    cmp.parentLitener(
+                        (p1, p2) => {
+                            try {
+                                p2.execute();
+                            } catch (e) {
+                                console.error(e.stack);
+                                throw e;
+                            }
+                        },
+                        this
+                    );
+                } else if ( ('%' === mf.func.getSize(cmp.parent().width())[1]) ||
+                            (0 !== mf.func.getSize(cmp.width())[0]) ) {
+                    let wid = mf.func.getSize(cmp.width());
+                    cmp.style({
+                        'position'    : 'relative',
+                        'margin-left' : '50%',
+                        'left'        : '-' + wid[0]/2 + wid[1]
+                    });
+                } else {
+                    cmp.style({
+                        'margin-right' : (true === flg) ? 'auto' : null,
+                        'margin-left'  : (true === flg) ? 'auto' : null
+                    });
+                }
             } else if ('right' === this.type()) {
                 if ('absolute' === cmp.style('position')) {
                     cmp.style({
@@ -92,7 +115,7 @@ mofron.effect.HrzPos = class extends mofron.Effect {
     
     disable (cmp) {
         try {
-            if (true === mofron.func.isInclude(cmp, 'Text')) {
+            if (true === mf.func.isInclude(cmp, 'Text')) {
                 this.text(cmp, false);
             } else {
                 this.other(cmp, false);
@@ -125,5 +148,5 @@ mofron.effect.HrzPos = class extends mofron.Effect {
         }
     }
 }
-module.exports = mofron.effect.HrzPos;
+module.exports = mf.effect.HrzPos;
 /* end of file */
