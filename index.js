@@ -72,17 +72,16 @@ mf.effect.HrzPos = class extends mf.Effect {
                 if (null === cmp.parent()) {
                     cmp.parentLitener(
                         (p1, p2) => {
-                            try {
-                                p2.execute();
-                            } catch (e) {
+                            try { p2.execute(); } catch (e) {
                                 console.error(e.stack);
                                 throw e;
                             }
                         },
                         this
                     );
-                } else if ( ('%' === cmp.parent().width().type()) ||
-                            (0   !== cmp.parent().width().value())  ) {
+                } else if ( (null !== cmp.parent().width())        &&
+                            ('%'  === cmp.parent().width().type()) ||
+                            (0    !== cmp.parent().width().value())  ) {
                     cmp.style({
                         'position'    : 'relative',
                         'margin-left' : '50%',
