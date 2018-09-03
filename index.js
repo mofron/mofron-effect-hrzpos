@@ -80,8 +80,8 @@ mf.effect.HrzPos = class extends mf.Effect {
                         this
                     );
                 } else if ( (null !== cmp.parent().width())        &&
-                            ('%'  === cmp.parent().width().type()) ||
-                            (0    !== cmp.parent().width().value())  ) {
+                            ( ('%'  === cmp.parent().width().type()) ||
+                              (0    !== cmp.parent().width().value()) )  ) {
                     cmp.style({
                         'position'    : 'relative',
                         'margin-left' : '50%',
