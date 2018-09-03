@@ -59,12 +59,12 @@ mf.effect.HrzPos = class extends mf.Effect {
             if ('left' === this.type()) {
                 if ('absolute' === cmp.style('position')) {
                     cmp.style({
-                        'left' : (true === flg) ? '0' + cmp.sizeType() : null,
+                        'left' : (true === flg) ? '0rem' : null,
                     });
                 } else {
                     cmp.style({
                         'margin-right' : (true === flg) ? 'auto' : null,
-                        'margin-left'  : (true === flg) ? '0' + cmp.sizeType() : null
+                        'margin-left'  : (true === flg) ? '0rem' : null
                     });
                 }
             } else if ('center' === this.type()) {
@@ -81,13 +81,12 @@ mf.effect.HrzPos = class extends mf.Effect {
                         },
                         this
                     );
-                } else if ( ('%' === mf.func.getSize(cmp.parent().width())[1]) ||
-                            (0 !== mf.func.getSize(cmp.width())[0]) ) {
-                    let wid = mf.func.getSize(cmp.width());
+                } else if ( ('%' === cmp.parent().width().type()) ||
+                            (0   !== cmp.parent().width().value())  ) {
                     cmp.style({
                         'position'    : 'relative',
                         'margin-left' : '50%',
-                        'left'        : '-' + wid[0]/2 + wid[1]
+                        'left'        : '-' + cmp.width().value()/2 + cmp.width().type()
                     });
                 } else {
                     cmp.style({
@@ -98,11 +97,11 @@ mf.effect.HrzPos = class extends mf.Effect {
             } else if ('right' === this.type()) {
                 if ('absolute' === cmp.style('position')) {
                     cmp.style({
-                        'right' : (true === flg) ? '0' + cmp.sizeType() : null,
+                        'right' : (true === flg) ? '0rem' : null,
                     });
                 } else {
                     cmp.style({
-                        'margin-right' : (true === flg) ? '0' + cmp.sizeType()  : null,
+                        'margin-right' : (true === flg) ? '0rem' : null,
                         'margin-left'  : (true === flg) ? 'auto' : null
                     });
                 }
