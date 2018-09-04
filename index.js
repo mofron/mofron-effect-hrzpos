@@ -58,9 +58,7 @@ mf.effect.HrzPos = class extends mf.Effect {
         try {
             if ('left' === this.type()) {
                 if ('absolute' === cmp.style('position')) {
-                    cmp.style({
-                        'left' : (true === flg) ? '0rem' : null,
-                    });
+                    cmp.style({ 'left' : (true === flg) ? '0rem' : null });
                 } else {
                     cmp.style({
                         'margin-right' : (true === flg) ? 'auto' : null,
@@ -82,8 +80,8 @@ mf.effect.HrzPos = class extends mf.Effect {
                 } else if ( (null !== cmp.parent().width())        &&
                             ( ('%'  === cmp.parent().width().type()) ||
                               (0    !== cmp.parent().width().value()) )  ) {
+                    cmp.style({ 'position' : 'relative' }, true);
                     cmp.style({
-                        'position'    : 'relative',
                         'margin-left' : '50%',
                         'left'        : '-' + cmp.width().value()/2 + cmp.width().type()
                     });
