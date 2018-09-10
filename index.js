@@ -115,6 +115,16 @@ mf.effect.HrzPos = class extends mf.Effect {
                         'margin-left' : '50%',
                         'left'        : '-' + cmp.width().value()/2 + cmp.width().type()
                     });
+                    if ((true === flg) && (null !== this.offset())) {
+                        cmp.sizeValue(
+                            'left',
+                            mf.func.sizeSum(
+                                cmp.sizeValue('left'),
+                                this.offset()
+                            )
+                        );
+                    }
+                    
                 } else {
                     cmp.style({
                         'margin-right' : (true === flg) ? 'auto' : null,
