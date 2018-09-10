@@ -9,12 +9,12 @@ const mf = require('mofron');
  */
 mf.effect.HrzPos = class extends mf.Effect {
     
-    constructor (po) {
+    constructor (po, p2) {
         try {
             super();
             this.name('HrzPos');
-            this.prmMap('type');
-            this.prmOpt(po);
+            this.prmMap('type', 'offset');
+            this.prmOpt(po, p2);
         } catch (e) {
             console.error(e.stack);
             throw e;
@@ -42,6 +42,34 @@ mf.effect.HrzPos = class extends mf.Effect {
                         'margin-right' : (true === flg) ? 'auto' : null,
                         'margin-left'  : (true === flg) ? 'auto' : null
                     });
+                    if ((true === flg) && (null !== this.offset())) {
+                        cmp.style({
+                            'position' : 'relative',
+                            'left'     : this.offset()
+                        });
+                    }
+                } else if ('left' === this.type()) {
+                    cmp.style({
+                        'margin-right' : (true === flg) ? 'auto' : null,
+                        'margin-left'  : (true === flg) ? '0rem' : null
+                    });
+                    if ((true === flg) && (null !== this.offset())) {
+                        cmp.sizeValue(
+                            'margin-left',
+                            mf.func.sizeSum('0rem', this.offset())
+                        );
+                    }
+                } else if ('right' === this.type()) {
+                    cmp.style({
+                        'margin-right' : (true === flg) ? '0rem' : null,
+                        'margin-left'  : (true === flg) ? 'auto' : null
+                    });
+                    if ((true === flg) && (null !== this.offset())) {
+                        cmp.sizeValue(
+                            'margin-right', 
+                            mf.func.sizeSum('0rem', this.offset())
+                        );
+                    }
                 }
             } else {
                 cmp.style({
@@ -140,6 +168,23 @@ mf.effect.HrzPos = class extends mf.Effect {
                 throw new Error('invalid parameter');
             }
             this.m_type = prm;
+        } catch (e) {
+            console.error(e.stack);
+            throw e;
+        }
+    }
+    
+    offset (prm) {
+        try {
+            if (undefined === prm) {
+                /* getter */
+                return (undefined === this.m_offset) ? null : this.m_offset;
+            }
+            /* setter */
+            if ('string' !== typeof prm) {
+                throw new Error('invalid parameter');
+            }
+            this.m_offset = prm;
         } catch (e) {
             console.error(e.stack);
             throw e;
