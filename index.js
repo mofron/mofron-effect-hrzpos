@@ -105,15 +105,13 @@ mf.effect.HrzPos = class extends mf.Effect {
                         },
                         this
                     );
-                } else if ( (null !== cmp.width())                   &&
-                            (   0 !== cmp.width().value())           &&
-                            (null !== cmp.parent().width())          &&
-                            ( ('%'  === cmp.parent().width().type()) ||
-                              (0    !== cmp.parent().width().value()) )  ) {
+                } else if ( (0 !== cmp.sizeValue('width').value()) &&
+                            ( ('%' === cmp.parent().sizeValue('width').type()) ||
+                              (0 !== cmp.parent().sizeValue('width').value()) ) ) {
                     cmp.style({ 'position' : 'relative' }, true);
                     cmp.style({
                         'margin-left' : '50%',
-                        'left'        : '-' + cmp.width().value()/2 + cmp.width().type()
+                        'left'        : '-' + cmp.sizeValue('width').value()/2 + cmp.sizeValue('width').type()
                     });
                     if ((true === flg) && (null !== this.offset())) {
                         cmp.sizeValue(
