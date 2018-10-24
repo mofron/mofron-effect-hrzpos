@@ -146,12 +146,13 @@ mf.effect.HrzPos = class extends mf.Effect {
                     },
                     this
                 );
-            } else if ( (0 !== cmp.sizeValue('width').value()) &&
-                        ( ('%' === cmp.parent().sizeValue('width').type()) ||
-                          (0 !== cmp.parent().sizeValue('width').value()) ) ) {
+            } else if ( (null !== cmp.sizeValue('width')) &&
+                        (null !== cmp.parent().sizeValue('width')) &&
+                        ('%' === cmp.parent().sizeValue('width').type()) &&
+                        (0  !== cmp.parent().sizeValue('width').value()) ) {
                 cmp.style({ 'position' : 'relative' }, true);
                 cmp.style({
-                    'margin-left' : '50%',
+                    'margin-left' : (true === flg) ? '50%' : null,
                     'left'        : null
                 });
                 if (true === flg) {
