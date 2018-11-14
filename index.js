@@ -166,8 +166,9 @@ mf.effect.HrzPos = class extends mf.Effect {
                 }
             } else {
                 cmp.style({
-                    'margin-right' : (true === flg) ? 'auto' : null,
-                    'margin-left'  : (true === flg) ? 'auto' : null
+                    'display'      : (true === flg) ? 'block' : null,
+                    'margin-right' : (true === flg) ? 'auto'  : null,
+                    'margin-left'  : (true === flg) ? 'auto'  : null
                 });
                 if ( (true === flg) && (null !== this.offset()) ) {
                     cmp.style({
