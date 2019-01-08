@@ -74,11 +74,11 @@ mf.effect.HrzPos = class extends mf.Effect {
                 } else if ('left' === this.type()) {
                     cmp.style({
                         'margin-right' : (true === flg) ? 'auto' : null,
-                        'margin-left'  : (true === flg) ? mf.func.sizeSum('0rem', this.offset()) : null
+                        'margin-left'  : (true === flg) ? '0rem' : null
                     });
                 } else if ('right' === this.type()) {
                     cmp.style({
-                        'margin-right' : (true === flg) ? mf.func.sizeSum('0rem', this.offset()) : null,
+                        'margin-right' : (true === flg) ? '0rem' : null,
                         'margin-left'  : (true === flg) ? 'auto' : null
                     });
                 }
@@ -207,7 +207,7 @@ mf.effect.HrzPos = class extends mf.Effect {
      * @return (string) size value of css
      */
     offset (prm) {
-        try { return this.member('offset', 'string', prm, '0rem'); } catch (e) {
+        try { return this.member('offset', 'string', prm, null); } catch (e) {
             console.error(e.stack);
             throw e;
         }
