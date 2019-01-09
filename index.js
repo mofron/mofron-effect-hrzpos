@@ -57,35 +57,34 @@ mf.effect.HrzPos = class extends mf.Effect {
      */
     textPos (cmp, flg) {
         try {
+            
             if ( (null !== cmp.target().parent()) &&
                  ('flex' === cmp.target().parent().style('display')) ) {
                 
                 if ('center' === this.type()) {
                     cmp.style({
-                        'margin-right' : (true === flg) ? 'auto' : null,
-                        'margin-left'  : (true === flg) ? 'auto' : null
+                        'margin-right': (true === flg) ? 'auto' : null,
+                        'margin-left' : (true === flg) ? 'auto' : null
                     });
-                    if ((true === flg) && (null !== this.offset())) {
-                        cmp.style({
-                            'position' : 'relative',
-                            'left'     : this.offset()
-                        });
-                    }
                 } else if ('left' === this.type()) {
                     cmp.style({
-                        'margin-right' : (true === flg) ? 'auto' : null,
-                        'margin-left'  : (true === flg) ? '0rem' : null
+                        'margin-right': (true === flg) ? 'auto' : null,
+                        'margin-left' : (true === flg) ? this.getValue() : null
                     });
                 } else if ('right' === this.type()) {
                     cmp.style({
-                        'margin-right' : (true === flg) ? '0rem' : null,
-                        'margin-left'  : (true === flg) ? 'auto' : null
+                        'margin-right': (true === flg) ? this.getValue() : null,
+                        'margin-left' : (true === flg) ? 'auto' : null
                     });
                 }
             } else {
-                cmp.style({
-                    'text-align' : (true === flg) ? this.type() : null
-                });
+                cmp.style({ 'text-align': (true === flg) ? this.type() : null });
+                if (null !== this.offset()) {
+                    let set_style = {};
+                    set_style['position']  = 'relative';
+                    set_style[this.type()] = this.getValue();
+                    cmp.style(set_style);
+                }
             }
         } catch (e) {
             console.error(e.stack);
@@ -100,26 +99,27 @@ mf.effect.HrzPos = class extends mf.Effect {
      */
     otherPos (cmp, flg) {
         try {
+            let set_val = null;
             if ('center' === this.type()) {
                 this.otherPosCenter(cmp, flg);
             } else if ('left' === this.type()) {
                 if ('absolute' === cmp.style('position')) {
-                    cmp.style({ 'left' : (true === flg) ? mf.func.sizeSum('0rem', this.offset()) : null });
+                    cmp.style({ 'left' : (true === flg) ? this.getValue() : null });
                 } else {
                     cmp.style({
-                        'margin-right' : (true === flg) ? 'auto' : null,
-                        'margin-left'  : (true === flg) ? mf.func.sizeSum('0rem', this.offset()) : null
+                        'margin-right': (true === flg) ? 'auto' : null,
+                        'margin-left' : (true === flg) ? this.getValue() : null
                     });
                 }
             } else if ('right' === this.type()) {
                 if ('absolute' === cmp.style('position')) {
                     cmp.style({
-                        'right' : (true === flg) ? mf.func.sizeSum('0rem', this.offset()) : null
+                        'right': (true === flg) ? this.getValue() : null
                     });
                 } else {
                     cmp.style({
-                        'margin-right' : (true === flg) ? mf.func.sizeSum('0rem', this.offset()) : null,
-                        'margin-left'  : (true === flg) ? 'auto' : null
+                        'margin-right': (true === flg) ? this.getValue() : null,
+                        'margin-left' : (true === flg) ? 'auto' : null
                     });
                 }
             } 
@@ -150,20 +150,11 @@ mf.effect.HrzPos = class extends mf.Effect {
                         (null !== cmp.parent().sizeValue('width')) &&
                         ('%' === cmp.parent().sizeValue('width').type()) &&
                         (0  !== cmp.parent().sizeValue('width').value()) ) {
-                cmp.style({ 'position' : 'relative' }, true);
                 cmp.style({
+                    'position'    : 'relative',
                     'margin-left' : (true === flg) ? '50%' : null,
-                    'left'        : null
+                    'left'        : this.getValue(cmp.sizeValue('width').value()/2 + cmp.sizeValue('width').type())
                 });
-                if (true === flg) {
-                    cmp.sizeValue(
-                        'left',
-                        mf.func.sizeSum(
-                            '-' + cmp.sizeValue('width').value()/2 + cmp.sizeValue('width').type(),
-                            this.offset()
-                        )
-                    );
-                }
             } else {
                 cmp.style({
                     'display'      : (true === flg) ? 'block' : null,
@@ -171,10 +162,7 @@ mf.effect.HrzPos = class extends mf.Effect {
                     'margin-left'  : (true === flg) ? 'auto'  : null
                 });
                 if ( (true === flg) && (null !== this.offset()) ) {
-                    cmp.style({
-                        'position' : 'relative',
-                        'left'     : this.offset()
-                    });
+                    cmp.style({ 'position': 'relative', 'left': this.getValue() });
                 }
             }
         } catch (e) {
@@ -191,9 +179,38 @@ mf.effect.HrzPos = class extends mf.Effect {
      * @return (string) position type
      */
     type (prm) {
+        try { return this.member('type', ['center', 'left', 'right'], prm, 'center'); } catch (e) {
+            console.error(e.stack);
+            throw e;
+        }
+    }
+    
+    getValue (prm) {
         try {
-            return this.member('type', ['center', 'left', 'right'], prm, 'center');
+            let val = '0' + this.valType();
+            if (undefined !== prm) {
+                val = mf.func.getSize(prm);
+                if (null === val) {
+                    throw new Error('invalid paramter');
+                }
+                this.valType(val.type());
+            }
+            
+            if (null !== this.offset()) {
+                try {
+                    return mf.func.sizeSum(val, this.offset());
+                } catch (e) {
+                    return val;
+                }
+            }
         } catch (e) {
+            console.error(e.stack);
+            throw e;
+        }
+    }
+    
+    valType (prm) {
+        try { return this.member('valType', 'string', prm, 'rem'); } catch (e) {
             console.error(e.stack);
             throw e;
         }
