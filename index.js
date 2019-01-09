@@ -153,7 +153,7 @@ mf.effect.HrzPos = class extends mf.Effect {
                 cmp.style({
                     'position'    : 'relative',
                     'margin-left' : (true === flg) ? '50%' : null,
-                    'left'        : this.getValue(cmp.sizeValue('width').value()/2 + cmp.sizeValue('width').type())
+                    'left'        : '-' + this.getValue(cmp.sizeValue('width').value()/2 + cmp.sizeValue('width').type())
                 });
             } else {
                 cmp.style({
@@ -202,6 +202,8 @@ mf.effect.HrzPos = class extends mf.Effect {
                 } catch (e) {
                     return val;
                 }
+            } else {
+                return val;
             }
         } catch (e) {
             console.error(e.stack);
