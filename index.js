@@ -33,8 +33,9 @@ mf.effect.HrzPos = class extends mf.Effect {
      *
      * @note private method
      */
-    contents (flg, cmp) {
+    contents (cmp) {
         try {
+            let flg = this.valid();
             if (true === mf.func.isInclude(cmp, 'Text')) {
                 this.textPos(cmp, flg);
             } else {
@@ -46,9 +47,6 @@ mf.effect.HrzPos = class extends mf.Effect {
             throw e;
         }
     }
-    
-    enable (cmp) {}
-    disable (cmp) {}
     
     /**
      * execute text component position
@@ -148,9 +146,10 @@ mf.effect.HrzPos = class extends mf.Effect {
                 );
             } else if ( (null !== cmp.sizeValue('width')) &&
                         (null !== cmp.parent().sizeValue('width')) &&
+                        ('%' === cmp.parent().sizeValue('width').type()) &&
                         (0  !== cmp.parent().sizeValue('width').value()) ) {
-                cmp.style({'position' : 'relative' }, true);
                 cmp.style({
+                    'position'    : 'relative',
                     'margin-left' : (true === flg) ? '50%' : null,
                     'left'        : '-' + this.getValue(cmp.sizeValue('width').value()/2 + cmp.sizeValue('width').type())
                 });
@@ -226,6 +225,13 @@ mf.effect.HrzPos = class extends mf.Effect {
      */
     offset (prm) {
         try { return this.member('offset', 'string', prm, null); } catch (e) {
+            console.error(e.stack);
+            throw e;
+        }
+    }
+    
+    valid (prm) {
+        try { return this.member('valid', 'boolean', prm, true); } catch (e) {
             console.error(e.stack);
             throw e;
         }
