@@ -144,16 +144,16 @@ mf.effect.HrzPos = class extends mf.Effect {
                     },
                     this
                 );
-            } else if ( (null !== cmp.sizeValue('width')) &&
-                        (null !== cmp.parent().sizeValue('width')) &&
-                        ('%' === cmp.parent().sizeValue('width').type()) &&
-                        (0  !== cmp.parent().sizeValue('width').value()) ) {
-                cmp.style({
-                    'position'    : 'relative',
-                    'margin-left' : (true === flg) ? '50%' : null,
-                    'left'        : '-' + this.getValue(cmp.sizeValue('width').value()/2 + cmp.sizeValue('width').type())
-                });
-            } else {
+            } else {// else if ( (null !== cmp.sizeValue('width')) &&
+             //           (null !== cmp.parent().sizeValue('width')) &&
+             //           ('%' === cmp.parent().sizeValue('width').type()) &&
+             //           (0  !== cmp.parent().sizeValue('width').value()) ) {
+             //   cmp.style({
+             //       'position'    : 'relative',
+             //       'margin-left' : (true === flg) ? '50%' : null,
+             //       'left'        : '-' + this.getValue(cmp.sizeValue('width').value()/2 + cmp.sizeValue('width').type())
+             //   });
+            //} else {
                 cmp.style({
                     'display'      : (true === flg) ? 'block' : null,
                     'margin-right' : (true === flg) ? 'auto'  : null,
