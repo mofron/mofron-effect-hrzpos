@@ -1,5 +1,5 @@
 /**
- * @file mofron-effect-position/index.js
+ * @file mofron-effect-hrzpos/index.js
  * @author simpart
  */
 const mf = require('mofron');
@@ -36,6 +36,11 @@ mf.effect.HrzPos = class extends mf.Effect {
     contents (cmp) {
         try {
             let flg = this.valid();
+            if (null !== this.contsIndex()) {
+                this.contsList(this.contsIndex())(this, cmp);
+                return;
+            }
+            
             if (true === mf.func.isInclude(cmp, 'Text')) {
                 this.textPos(cmp, flg);
             } else {
@@ -58,23 +63,7 @@ mf.effect.HrzPos = class extends mf.Effect {
             
             if ( (null !== cmp.target().parent()) &&
                  ('flex' === cmp.target().parent().style('display')) ) {
-                
-                if ('center' === this.type()) {
-                    cmp.style({
-                        'margin-right': (true === flg) ? 'auto' : null,
-                        'margin-left' : (true === flg) ? 'auto' : null
-                    });
-                } else if ('left' === this.type()) {
-                    cmp.style({
-                        'margin-right': (true === flg) ? 'auto' : null,
-                        'margin-left' : (true === flg) ? this.getValue() : null
-                    });
-                } else if ('right' === this.type()) {
-                    cmp.style({
-                        'margin-right': (true === flg) ? this.getValue() : null,
-                        'margin-left' : (true === flg) ? 'auto' : null
-                    });
-                }
+                this.contsList(0)(this, cmp);
             } else {
                 cmp.style({ 'text-align': (true === flg) ? this.type() : null });
                 if (null !== this.offset()) {
@@ -102,23 +91,15 @@ mf.effect.HrzPos = class extends mf.Effect {
                 this.otherPosCenter(cmp, flg);
             } else if ('left' === this.type()) {
                 if ('absolute' === cmp.style('position')) {
-                    cmp.style({ 'left' : (true === flg) ? this.getValue() : null });
+                    this.contsList(1)(this, cmp);
                 } else {
-                    cmp.style({
-                        'margin-right': (true === flg) ? 'auto' : null,
-                        'margin-left' : (true === flg) ? this.getValue() : null
-                    });
+                    this.contsList(0)(this, cmp);
                 }
             } else if ('right' === this.type()) {
                 if ('absolute' === cmp.style('position')) {
-                    cmp.style({
-                        'right': (true === flg) ? this.getValue() : null
-                    });
+                    this.contsList(1)(this, cmp);
                 } else {
-                    cmp.style({
-                        'margin-right': (true === flg) ? this.getValue() : null,
-                        'margin-left' : (true === flg) ? 'auto' : null
-                    });
+                    this.contsList(0)(this, cmp);
                 }
             } 
         } catch (e) {
@@ -144,7 +125,10 @@ mf.effect.HrzPos = class extends mf.Effect {
                     },
                     this
                 );
-            } else {// else if ( (null !== cmp.sizeValue('width')) &&
+            } else if (null !== cmp.style('position')) {
+                this.contsList(2)(this, cmp);
+            // else if (null !== cmp.style('position')) {
+            // else if ( (null !== cmp.sizeValue('width')) &&
              //           (null !== cmp.parent().sizeValue('width')) &&
              //           ('%' === cmp.parent().sizeValue('width').type()) &&
              //           (0  !== cmp.parent().sizeValue('width').value()) ) {
@@ -153,15 +137,9 @@ mf.effect.HrzPos = class extends mf.Effect {
              //       'margin-left' : (true === flg) ? '50%' : null,
              //       'left'        : '-' + this.getValue(cmp.sizeValue('width').value()/2 + cmp.sizeValue('width').type())
              //   });
-            //} else {
-                cmp.style({
-                    'display'      : (true === flg) ? 'block' : null,
-                    'margin-right' : (true === flg) ? 'auto'  : null,
-                    'margin-left'  : (true === flg) ? 'auto'  : null
-                });
-                if ( (true === flg) && (null !== this.offset()) ) {
-                    cmp.style({ 'position': 'relative', 'left': this.getValue() });
-                }
+            } else {
+                cmp.style({ 'display' : (true === flg) ? 'block' : null });
+                this.contsList(0)(this, cmp);
             }
         } catch (e) {
             console.error(e.stack);
@@ -211,6 +189,74 @@ mf.effect.HrzPos = class extends mf.Effect {
     
     valType (prm) {
         try { return this.member('valType', 'string', prm, 'rem'); } catch (e) {
+            console.error(e.stack);
+            throw e;
+        }
+    }
+    
+    contsIndex (prm) {
+        try { return this.member('contsIndex', 'number', prm); } catch (e) {
+            console.error(e.stack);
+            throw e;
+        }
+    }
+    
+    contsList (idx) {
+        try {
+            let conts = [
+                (eff, cmp) => {
+                    try {
+                        if ('center' === eff.type()) {
+                            cmp.style({
+                                'margin-right': (true === eff.valid()) ? 'auto' : null,
+                                'margin-left' : (true === eff.valid()) ? 'auto' : null
+                            });
+                            if (null !== eff.offset()) {
+                                cmp.style({ 'position': 'relative', 'left': eff.offset() });
+                            }
+                        } else if ('left' === eff.type()) {
+                            cmp.style({
+                                'margin-right': (true === eff.valid()) ? 'auto' : null,
+                                'margin-left' : (true === eff.valid()) ? eff.getValue() : null
+                            });
+                        } else {
+                            cmp.style({
+                                'margin-right': (true === eff.valid()) ? eff.getValue() : null,
+                                'margin-left' : (true === eff.valid()) ? 'auto' : null
+                            });
+                        }
+                    } catch (e) {
+                        console.error(e.stack);
+                        throw e;
+                    }
+                },
+                (eff, cmp) => {
+                    try {
+                        if ('left' === eff.type()) {
+                            cmp.style({ 'left' : (true === eff.valid()) ? eff.getValue() : null });
+                        } else if ('right' === eff.type()) {
+                            cmp.style({ 'right': (true === eff.valid()) ? eff.getValue() : null });
+                        }
+                    } catch (e) {
+                        console.error(e.stack);
+                        throw e;
+                    }
+                },
+                (eff, cmp) => {
+                    try {
+                        let val = eff.getValue(cmp.sizeValue('width').value()/2 + cmp.sizeValue('width').type());
+                        cmp.style({
+                            'margin-left' : (true === eff.valid()) ? '50%' : null,
+                            'left'        : '-' + val
+                        });
+                    } catch (e) {
+                        console.error(e.stack);
+                        throw e;
+                    }
+                }
+            ];
+            return conts[idx];
+        } catch (e) {
             console.error(e.stack);
             throw e;
         }
