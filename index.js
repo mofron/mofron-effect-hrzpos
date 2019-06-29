@@ -35,6 +35,7 @@ mf.effect.HrzPos = class extends mf.Effect {
      */
     contents (cmp) {
         try {
+console.log("cmp");
             let flg = this.valid();
             if (null !== this.contsIndex()) {
                 this.contsList(this.contsIndex())(this, cmp);
@@ -89,17 +90,11 @@ mf.effect.HrzPos = class extends mf.Effect {
             let set_val = null;
             if ('center' === this.type()) {
                 this.otherPosCenter(cmp, flg);
-            } else if ('left' === this.type()) {
-                if ('absolute' === cmp.style('position')) {
-                    this.contsList(1)(this, cmp);
-                } else {
+            } else if ( ("left" === this.type()) || ("right" === this.type()) ) {
+                if ("relative" === cmp.style('position')) {
                     this.contsList(0)(this, cmp);
-                }
-            } else if ('right' === this.type()) {
-                if ('absolute' === cmp.style('position')) {
-                    this.contsList(1)(this, cmp);
                 } else {
-                    this.contsList(0)(this, cmp);
+                    this.contsList(1)(this, cmp);
                 }
             } 
         } catch (e) {
