@@ -35,7 +35,6 @@ mf.effect.HrzPos = class extends mf.Effect {
      */
     contents (cmp) {
         try {
-console.log("cmp");
             let flg = this.valid();
             if (null !== this.contsIndex()) {
                 this.contsList(this.contsIndex())(this, cmp);
