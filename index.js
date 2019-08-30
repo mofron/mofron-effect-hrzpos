@@ -238,7 +238,8 @@ mf.effect.HrzPos = class extends mf.Effect {
                 },
                 (eff, cmp) => {
                     try {
-                        let val = eff.getValue(cmp.sizeValue('width').value()/2 + cmp.sizeValue('width').type());
+		        let buf = mf.func.getSize(mf.func.cmpSize(cmp,'width'));
+                        let val = eff.getValue(buf.value()/2 + buf.type());
                         cmp.style({
                             'margin-left' : (true === eff.valid()) ? '50%' : null,
                             'left'        : '-' + val
