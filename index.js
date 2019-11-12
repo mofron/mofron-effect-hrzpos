@@ -64,7 +64,12 @@ mf.effect.HrzPos = class extends mf.Effect {
             if ( (null !== cmp.target().parent()) &&
                  ('flex' === cmp.target().parent().style('display')) ) {
                 this.contsList(0)(this, cmp);
-            } else {
+            } else if ("absolute" === cmp.style("position")) {
+	        cmp.style({
+                    "left" : "50%",
+		    "transform" : "translateX(-50%)"
+		});
+	    } else {
                 cmp.style({ 'text-align': (true === flg) ? this.type() : null });
                 if (null !== this.offset()) {
                     let set_style = {};
