@@ -3,6 +3,8 @@
  * @author simpart
  */
 const mf = require('mofron');
+const transform = require('mofron-transform');
+
 /**
  * @class mofron.effect.Position
  * @brief horizon position of component effect class
@@ -65,10 +67,8 @@ mf.effect.HrzPos = class extends mf.Effect {
                  ('flex' === cmp.target().parent().style('display')) ) {
                 this.contsList(0)(this, cmp);
             } else if ("absolute" === cmp.style("position")) {
-	        cmp.style({
-                    "left" : "50%",
-		    "transform" : "translateX(-50%)"
-		});
+	        cmp.style({ "left" : "50%" });
+		transform.translate(cmp, "-50%");
 	    } else {
                 cmp.style({ 'text-align': (true === flg) ? this.type() : null });
                 if (null !== this.offset()) {
