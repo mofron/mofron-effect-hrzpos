@@ -1,17 +1,17 @@
 {
   "name": "mofron-effect-hrzpos",
-  "version": "0.2.10",
+  "version": "0.3.0",
   "description": "horizon positon effect for mofron",
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "dependencies": {
-    "mofron-transform" : ""
+    "mofron-util-transform" : ""
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/simpart/mofron-effect-hrzpos.git"
+    "url": "git+https://github.com/mofron/mofron-effect-hrzpos.git"
   },
   "keywords": [
     "front-end"
@@ -19,7 +19,7 @@
   "author": "simparts",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/simpart/mofron-effect-hrzpos/issues"
+    "url": "https://github.com/mofron/mofron-effect-hrzpos/issues"
   },
-  "homepage": "https://github.com/simpart/mofron-effect-hrzpos#readme"
+  "homepage": "https://github.com/mofron/mofron-effect-hrzpos#readme"
 }

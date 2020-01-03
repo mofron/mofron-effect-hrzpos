@@ -1,29 +1,34 @@
 /**
  * @file mofron-effect-hrzpos/index.js
+ * @brief horizonal position effect for mofron component
+ *        the component is positioned specified parameter that is 'center' or 'left' and 'right'.
  * @author simpart
  */
-const mf = require('mofron');
-const transform = require('mofron-transform');
+require('mofron-util-transform');
+const cmputl = mofron.util.component;
+const comutl = mofron.util.common;
 
-/**
- * @class mofron.effect.Position
- * @brief horizon position of component effect class
- */
-mf.effect.HrzPos = class extends mf.Effect {
-    
+module.exports = class extends mofron.class.Effect {
     /**
      * initialize effect
-     *
-     * @param p1 (object) effect option
-     * @param p1 (string) type function parameter
-     * @param p2 (string) offset function parameter
+     * 
+     * @param (mixed) type parameter
+     *                key-value: effect config
+     * @param (string) offset parameter
      */
-    constructor (po, p2) {
+    constructor (p1, p2) {
         try {
             super();
             this.name('HrzPos');
-            this.prmMap(['type', 'offset']);
-            this.prmOpt(po, p2);
+            this.shortForm('type', 'offset');
+
+            /* init config */
+            this.confmng().add("offset",{ type: "size" });
+            this.confmng().add("type", { type: "string", init: "center" });
+            
+	    if (0 < arguments.length) {
+                this.config(p1, p2);
+            }
         } catch (e) {
             console.error(e.stack);
             throw e;
@@ -32,23 +37,37 @@ mf.effect.HrzPos = class extends mf.Effect {
     
     /**
      * effect contents
-     *
-     * @note private method
+     * 
+     * @param (component) target component
+     * @type private
      */
     contents (cmp) {
         try {
-            let flg = this.valid();
-            if (null !== this.contsIndex()) {
-                this.contsList(this.contsIndex())(this, cmp);
-                return;
-            }
-            
-            if (true === mf.func.isInclude(cmp, 'Text')) {
-                this.textPos(cmp, flg);
-            } else {
-                this.otherPos(cmp, flg);
-            }
-            super.contents(flg, cmp);
+	    if (true === comutl.isinc(cmp, "Text")) {
+                this.txtpos(cmp);
+		return;
+	    }
+	    let cmp_pos = cmp.style("position");
+	    if ("center" === this.type()) {
+                if (null === cmp_pos) {
+                    cmp.style({ 'display' : 'block' });
+		}
+                this.mgnpos(cmp);
+	    } else {
+                if ("relative" === cmp_pos) {
+		    this.mgnpos(cmp);
+                } else if (("absolute" === cmp_pos) || ("flex" === cmp_pos)) {
+                    this.lftpos(cmp);
+                } else {
+                    if (null === cmp.parent()) {
+                        cmp.style({ "position" : "relative" });
+			this.mgnpos(cmp);
+		    } else {
+		        cmp.style({ "position" : "absolute" });
+                        this.lftpos(cmp);
+		    }
+		}
+	    }
         } catch (e) {
             console.error(e.stack);
             throw e;
@@ -56,19 +75,18 @@ mf.effect.HrzPos = class extends mf.Effect {
     }
     
     /**
-     * execute text component position
+     * text component position
      * 
-     * @note private method
+     * @param (component) target component
+     * @type private
      */
-    textPos (cmp, flg) {
+    txtpos (cmp) {
         try {
-            
-            if ( (null !== cmp.target().parent()) &&
-                 ('flex' === cmp.target().parent().style('display')) ) {
-                this.contsList(0)(this, cmp);
-            } else if ("absolute" === cmp.style("position")) {
-	        cmp.style({ "left" : "50%" });
-		transform.translate(cmp, "-50%");
+            if ( (null !== cmp.childDom().parent()) &&
+                 ('flex' === cmp.childDom().parent().style('display')) ) {
+		this.mgnpos(cmp);
+            } else if (("absolute" === cmp.style("position")) || ("flex" === cmp.style("position"))) {
+	        this.lftpos(cmp);
 	    } else {
                 cmp.style({ 'text-align': (true === flg) ? this.type() : null });
                 if (null !== this.offset()) {
@@ -85,203 +103,110 @@ mf.effect.HrzPos = class extends mf.Effect {
     }
     
     /**
-     * execute other component position
-     *
-     * @note private method
-     */
-    otherPos (cmp, flg) {
-        try {
-            let set_val = null;
-            if ('center' === this.type()) {
-                this.otherPosCenter(cmp, flg);
-            } else if ( ("left" === this.type()) || ("right" === this.type()) ) {
-                if ("relative" === cmp.style('position')) {
-                    this.contsList(0)(this, cmp);
-                } else {
-                    this.contsList(1)(this, cmp);
-                }
-            } 
-        } catch (e) {
-            console.error(e.stack);
-            throw e;
-        }
-    }
-    
-    /**
-     * execute other component center position
-     *
-     * @note private method
-     */
-    otherPosCenter (cmp, flg) {
-        try {
-            if (null === cmp.parent()) {
-                cmp.parentLitener(
-                    (p1, p2) => {
-                        try { p2.execute(); } catch (e) {
-                            console.error(e.stack);
-                            throw e;
-                        }
-                    },
-                    this
-                );
-            } else if (null !== cmp.style('position')) {
-                this.contsList(2)(this, cmp);
-            // else if (null !== cmp.style('position')) {
-            // else if ( (null !== cmp.sizeValue('width')) &&
-             //           (null !== cmp.parent().sizeValue('width')) &&
-             //           ('%' === cmp.parent().sizeValue('width').type()) &&
-             //           (0  !== cmp.parent().sizeValue('width').value()) ) {
-             //   cmp.style({
-             //       'position'    : 'relative',
-             //       'margin-left' : (true === flg) ? '50%' : null,
-             //       'left'        : '-' + this.getValue(cmp.sizeValue('width').value()/2 + cmp.sizeValue('width').type())
-             //   });
-            } else {
-                cmp.style({ 'display' : (true === flg) ? 'block' : null });
-                this.contsList(0)(this, cmp);
-            }
-        } catch (e) {
-            console.error(e.stack);
-            throw e;
-        }
-    }
-    
-    /**
-     * setter/getter position type 
+     * set margin position
      * 
-     * @param p1 ('center', 'left', 'right') set position type
-     * @param p1 (undefind) call as getter
+     * @param (component) target component
+     * @type private 
+     */
+    mgnpos (cmp) {
+        try {
+	    let off = this.offset();
+            if ('center' === this.type()) {
+                cmp.style({
+                    'margin-right': 'auto', 'margin-left' : 'auto'
+                });
+                if (null !== off) {
+                    cmp.style({ 'position': 'relative', 'left': off.toString() });
+                }
+                
+                //let buf = mf.func.getSize(mf.func.cmpSize(cmp,'width'));
+                //let val = eff.getValue(buf.value()/2 + buf.type());
+                //cmp.style({
+                //    'margin-left' : (true === eff.valid()) ? '50%' : null,
+                //    'left'        : '-' + val
+                //});
+            } else if ('left' === this.type()) {
+                cmp.style({
+                    'margin-right': 'auto', 'margin-left' : '0rem'
+                });
+                if (null !== off) {
+                    cmp.style({ "margin-left" : off.toString() });
+		}
+            } else {
+                cmp.style({
+                    'margin-right': '0rem', 'margin-left' : 'auto'
+                });
+		if (null !== off) {
+                    cmp.style({ "margin-right" : off.toString() });
+		}
+            }
+	} catch (e) {
+            console.error(e.stack);
+            throw e;
+	}
+    }
+    
+    /**
+     * set left position
+     * 
+     * @param (component) target component
+     * @type private
+     */
+    lftpos (cmp) {
+        try {
+            let off = this.offset();
+            if ('center' === this.type()) {
+                cmp.style({ "left" : "50%" });
+		let ts = ((null !== off) && ("%" === off.type())) ? comutl.sizesum("-50%",off.toString()) : "-50%";
+		cmputl.translate(cmp, ts);
+	    } else if ('left' === this.type()) {
+	        cmp.style({ "left" : (null !== off) ? off.toString() : "0rem" });
+            } else if ('right' === this.type()) {
+	        cmp.style({ "right" : (null !== off) ? off.toString() : "0rem" });
+            }
+	} catch (e) {
+            console.error(e.stack);
+            throw e;
+	}
+    }
+    
+    /**
+     * position type 
+     * 
+     * @param (string) position type ('center', 'left', 'right')
      * @return (string) position type
+     * @type parameter
      */
     type (prm) {
-        try { return this.member('type', ['center', 'left', 'right'], prm, 'center'); } catch (e) {
-            console.error(e.stack);
-            throw e;
-        }
-    }
-    
-    getValue (prm) {
         try {
-            let val = '0' + this.valType();
-            if (undefined !== prm) {
-                val = mf.func.getSize(prm);
-                if (null === val) {
-                    throw new Error('invalid paramter');
-                }
-                this.valType(val.type());
+            if (undefined === prm) {
+                return this.confmng("type");
             }
-            
-            if (null !== this.offset()) {
-                try {
-                    return mf.func.sizeSum(val, this.offset());
-                } catch (e) {
-                    return val;
-                }
-            } else {
-                return val;
+            if (("left" !== prm) && ("center" !== prm) && ("right" !== prm)) {
+                throw new Error("invalid parameter");
             }
-        } catch (e) {
-            console.error(e.stack);
-            throw e;
-        }
-    }
-    
-    valType (prm) {
-        try { return this.member('valType', 'string', prm, 'rem'); } catch (e) {
-            console.error(e.stack);
-            throw e;
-        }
-    }
-    
-    contsIndex (prm) {
-        try { return this.member('contsIndex', 'number', prm); } catch (e) {
-            console.error(e.stack);
-            throw e;
-        }
-    }
-    
-    contsList (idx) {
-        try {
-            let conts = [
-                (eff, cmp) => {
-                    try {
-                        if ('center' === eff.type()) {
-                            cmp.style({
-                                'margin-right': (true === eff.valid()) ? 'auto' : null,
-                                'margin-left' : (true === eff.valid()) ? 'auto' : null
-                            });
-                            if (null !== eff.offset()) {
-                                cmp.style({ 'position': 'relative', 'left': eff.offset() });
-                            }
-                        } else if ('left' === eff.type()) {
-                            cmp.style({
-                                'margin-right': (true === eff.valid()) ? 'auto' : null,
-                                'margin-left' : (true === eff.valid()) ? eff.getValue() : null
-                            });
-                        } else {
-                            cmp.style({
-                                'margin-right': (true === eff.valid()) ? eff.getValue() : null,
-                                'margin-left' : (true === eff.valid()) ? 'auto' : null
-                            });
-                        }
-                    } catch (e) {
-                        console.error(e.stack);
-                        throw e;
-                    }
-                },
-                (eff, cmp) => {
-                    try {
-                        if ('left' === eff.type()) {
-                            cmp.style({ 'left' : (true === eff.valid()) ? eff.getValue() : null });
-                        } else if ('right' === eff.type()) {
-                            cmp.style({ 'right': (true === eff.valid()) ? eff.getValue() : null });
-                        }
-                    } catch (e) {
-                        console.error(e.stack);
-                        throw e;
-                    }
-                },
-                (eff, cmp) => {
-                    try {
-		        let buf = mf.func.getSize(mf.func.cmpSize(cmp,'width'));
-                        let val = eff.getValue(buf.value()/2 + buf.type());
-                        cmp.style({
-                            'margin-left' : (true === eff.valid()) ? '50%' : null,
-                            'left'        : '-' + val
-                        });
-                    } catch (e) {
-                        console.error(e.stack);
-                        throw e;
-                    }
-                }
-            ];
-            return conts[idx];
-        } catch (e) {
+            this.confmng("type", prm);
+	} catch (e) {
             console.error(e.stack);
             throw e;
         }
     }
     
     /**
-     * setter/getter offset position
+     * position offset
      * 
-     * @param p1 (string) size value of css
-     * @param p1 (undefined) call as getter
-     * @return (string) size value of css
+     * @param (string (size)) position offset size
+     * @return (string (size)) position offset size
+     * @type parameter
      */
     offset (prm) {
-        try { return this.member('offset', 'string', prm, null); } catch (e) {
+        try { 
+            return this.confmng("offset", prm);
+        } catch (e) {
             console.error(e.stack);
             throw e;
         }
     }
     
-    valid (prm) {
-        try { return this.member('valid', 'boolean', prm, true); } catch (e) {
-            console.error(e.stack);
-            throw e;
-        }
-    }
 }
-module.exports = mf.effect.HrzPos;
 /* end of file */
