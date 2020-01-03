@@ -15,6 +15,8 @@ module.exports = class extends mofron.class.Effect {
      * @param (mixed) type parameter
      *                key-value: effect config
      * @param (string) offset parameter
+     * @short type,offset
+     * @type private
      */
     constructor (p1, p2) {
         try {

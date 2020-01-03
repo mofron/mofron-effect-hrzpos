@@ -1,6 +1,6 @@
 {
   "name": "mofron-effect-hrzpos",
-  "version": "0.3.0",
+  "version": "0.3.1",
   "description": "horizon positon effect for mofron",
   "main": "index.js",
   "scripts": {

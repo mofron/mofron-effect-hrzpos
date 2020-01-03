@@ -11,14 +11,21 @@ the component is positioned specified parameter that is 'center' or 'left' and '
 npm install mofron mofron-effect-hrzpos
 ```
 
+# Sample
+```html
+<require>
+    <tag load="mofron-comp-text">Text</tag>
+    <tag load="mofron-effect-hrzpos">Hrzpos</tag>
+</require>
+
+<Text effect=Hrzpos("center")>Horizon Position Effect</Text>
+
+```
+
 # Parameter
 
 | Short<br>Form | Parameter Name | Type | Description |
 |:-------------:|:---------------|:-----|:------------|
-| | constructor | mixed | type parameter |
-| | | | key-value: effect config |
-| | | string | offset parameter |
-| | mgnpos | component | target component |
-| | type | string | position type ('center', 'left', 'right') |
-| | offset | string (size) | position offset size |
+| ◯  | type | string | position type ('center', 'left', 'right') |
+| ◯  | offset | string (size) | position offset size |
 
