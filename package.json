@@ -1,6 +1,6 @@
 {
   "name": "mofron-effect-hrzpos",
-  "version": "0.3.1",
+  "version": "0.3.2",
   "description": "horizon positon effect for mofron",
   "main": "index.js",
   "scripts": {
@@ -14,7 +14,7 @@
     "url": "git+https://github.com/mofron/mofron-effect-hrzpos.git"
   },
   "keywords": [
-    "front-end"
+    "front-end","mofron"
   ],
   "author": "simparts",
   "license": "MIT",

@@ -18,7 +18,7 @@ npm install mofron mofron-effect-hrzpos
     <tag load="mofron-effect-hrzpos">Hrzpos</tag>
 </require>
 
-<Text effect=Hrzpos("center")>Horizon Position Effect</Text>
+<Text effect=Hrzpos:"center">Horizon Position Effect</Text>
 
 ```
 
@@ -26,6 +26,8 @@ npm install mofron mofron-effect-hrzpos
 
 | Short<br>Form | Parameter Name | Type | Description |
 |:-------------:|:---------------|:-----|:------------|
-| ◯  | type | string | position type ('center', 'left', 'right') |
-| ◯  | offset | string (size) | position offset size |
+| ◯  | type | string | set position type ('center','left','right') |
+| | | | undefind: call as getter |
+| ◯  | offset | string(size) | position offset size |
+| | | | undefined: call as getter |
 

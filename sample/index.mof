@@ -3,5 +3,5 @@
     <tag load="mofron-effect-hrzpos">Hrzpos</tag>
 </require>
 
-<Text effect=Hrzpos("center")>Horizon Position Effect</Text>
+<Text effect=Hrzpos:"center">Horizon Position Effect</Text>
 

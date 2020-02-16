@@ -2,7 +2,7 @@
  * @file mofron-effect-hrzpos/index.js
  * @brief horizonal position effect for mofron component
  *        the component is positioned specified parameter that is 'center' or 'left' and 'right'.
- * @author simpart
+ * @license MIT
  */
 require('mofron-util-transform');
 const cmputl = mofron.util.component;
@@ -18,18 +18,17 @@ module.exports = class extends mofron.class.Effect {
      * @short type,offset
      * @type private
      */
-    constructor (p1, p2) {
+    constructor (prm) {
         try {
             super();
             this.name('HrzPos');
             this.shortForm('type', 'offset');
-
             /* init config */
             this.confmng().add("offset",{ type: "size" });
-            this.confmng().add("type", { type: "string", init: "center" });
-            
-	    if (0 < arguments.length) {
-                this.config(p1, p2);
+            this.confmng().add("type", { type: "string", init: "center", select: ["center", "left", "right"] });
+            /* set config */
+	    if (undefined !== prm) {
+                this.config(prm);
             }
         } catch (e) {
             console.error(e.stack);
@@ -40,7 +39,7 @@ module.exports = class extends mofron.class.Effect {
     /**
      * effect contents
      * 
-     * @param (component) target component
+     * @param (mofron.class.Component) effect target component
      * @type private
      */
     contents (cmp) {
@@ -79,7 +78,7 @@ module.exports = class extends mofron.class.Effect {
     /**
      * text component position
      * 
-     * @param (component) target component
+     * @param (mofron-comp-text) effect target component
      * @type private
      */
     txtpos (cmp) {
@@ -90,12 +89,12 @@ module.exports = class extends mofron.class.Effect {
             } else if (("absolute" === cmp.style("position")) || ("flex" === cmp.style("position"))) {
 	        this.lftpos(cmp);
 	    } else {
-                cmp.style({ 'text-align': (true === flg) ? this.type() : null });
+                cmp.style({ 'text-align': this.type() });
                 if (null !== this.offset()) {
-                    let set_style = {};
-                    set_style['position']  = 'relative';
-                    set_style[this.type()] = this.getValue();
-                    cmp.style(set_style);
+                    cmp.style({
+                        'position' : 'relative',
+                        'left'     : this.offset().toString()
+		    });
                 }
             }
         } catch (e) {
@@ -107,8 +106,8 @@ module.exports = class extends mofron.class.Effect {
     /**
      * set margin position
      * 
-     * @param (component) target component
-     * @type private 
+     * @param (mofron.class.Component) effect target component
+     * @type private
      */
     mgnpos (cmp) {
         try {
@@ -150,8 +149,8 @@ module.exports = class extends mofron.class.Effect {
     
     /**
      * set left position
-     * 
-     * @param (component) target component
+     *
+     * @param (mofron.class.Component) effect target component
      * @type private
      */
     lftpos (cmp) {
@@ -173,21 +172,16 @@ module.exports = class extends mofron.class.Effect {
     }
     
     /**
-     * position type 
+     * position type setter/getter
      * 
-     * @param (string) position type ('center', 'left', 'right')
+     * @param (string) set position type ('center','left','right')
+     *                 undefind: call as getter
      * @return (string) position type
      * @type parameter
      */
     type (prm) {
         try {
-            if (undefined === prm) {
-                return this.confmng("type");
-            }
-            if (("left" !== prm) && ("center" !== prm) && ("right" !== prm)) {
-                throw new Error("invalid parameter");
-            }
-            this.confmng("type", prm);
+            return this.confmng("type", prm);
 	} catch (e) {
             console.error(e.stack);
             throw e;
@@ -195,10 +189,12 @@ module.exports = class extends mofron.class.Effect {
     }
     
     /**
-     * position offset
+     * position offset setter/getter
      * 
-     * @param (string (size)) position offset size
-     * @return (string (size)) position offset size
+     * @param (string(size)) position offset size
+     *                       undefined: call as getter
+     * @return (mixed) string(size): position offset size
+     *                 null: not set
      * @type parameter
      */
     offset (prm) {
@@ -209,6 +205,5 @@ module.exports = class extends mofron.class.Effect {
             throw e;
         }
     }
-    
 }
 /* end of file */
