@@ -93,7 +93,7 @@ module.exports = class extends mofron.class.Effect {
                 if (null !== this.offset()) {
                     cmp.style({
                         'position' : 'relative',
-                        'left'     : this.offset().toString()
+                        'left'     : this.offset()
 		    });
                 }
             }
@@ -117,7 +117,7 @@ module.exports = class extends mofron.class.Effect {
                     'margin-right': 'auto', 'margin-left' : 'auto'
                 });
                 if (null !== off) {
-                    cmp.style({ 'position': 'relative', 'left': off.toString() });
+                    cmp.style({ 'position': 'relative', 'left': off });
                 }
                 
                 //let buf = mf.func.getSize(mf.func.cmpSize(cmp,'width'));
@@ -131,14 +131,14 @@ module.exports = class extends mofron.class.Effect {
                     'margin-right': 'auto', 'margin-left' : '0rem'
                 });
                 if (null !== off) {
-                    cmp.style({ "margin-left" : off.toString() });
+                    cmp.style({ "margin-left" : off });
 		}
             } else {
                 cmp.style({
                     'margin-right': '0rem', 'margin-left' : 'auto'
                 });
 		if (null !== off) {
-                    cmp.style({ "margin-right" : off.toString() });
+                    cmp.style({ "margin-right" : off });
 		}
             }
 	} catch (e) {
@@ -158,12 +158,15 @@ module.exports = class extends mofron.class.Effect {
             let off = this.offset();
             if ('center' === this.type()) {
                 cmp.style({ "left" : "50%" });
-		let ts = ((null !== off) && ("%" === off.type())) ? comutl.sizesum("-50%",off.toString()) : "-50%";
-		cmputl.translate(cmp, ts);
+		if ((null === off) || ("%" !== comutl.sizetype(off))) {
+                    cmputl.translate(cmp, "-50%");
+		} else {
+                    cmputl.translate(cmp, comutl.sizesum("-50%",off));
+		}
 	    } else if ('left' === this.type()) {
-	        cmp.style({ "left" : (null !== off) ? off.toString() : "0rem" });
+	        cmp.style({ "left" : (null !== off) ? off : "0rem" });
             } else if ('right' === this.type()) {
-	        cmp.style({ "right" : (null !== off) ? off.toString() : "0rem" });
+	        cmp.style({ "right" : (null !== off) ? off : "0rem" });
             }
 	} catch (e) {
             console.error(e.stack);
