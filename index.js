@@ -57,10 +57,10 @@ module.exports = class extends mofron.class.Effect {
 	    } else {
                 if ("relative" === cmp_pos) {
 		    this.mgnpos(cmp);
-                } else if (("absolute" === cmp_pos) || ("flex" === cmp_pos)) {
+                } else if (("absolute" === cmp_pos) || ("fixed" === cmp_pos)) {
                     this.lftpos(cmp);
                 } else {
-                    if (null === cmp.parent()) {
+                    if (null !== cmp.parent()) {
                         cmp.style({ "position" : "relative" });
 			this.mgnpos(cmp);
 		    } else {
@@ -117,7 +117,7 @@ module.exports = class extends mofron.class.Effect {
                     'margin-right': 'auto', 'margin-left' : 'auto'
                 });
                 if (null !== off) {
-                    cmp.style({ 'position': 'relative', 'left': off });
+                    cmp.style({ 'position': 'relative', 'left': off.toString() });
                 }
                 
                 //let buf = mf.func.getSize(mf.func.cmpSize(cmp,'width'));
