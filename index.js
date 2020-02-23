@@ -4,7 +4,6 @@
  *        the component is positioned specified parameter that is 'center' or 'left' and 'right'.
  * @license MIT
  */
-require('mofron-util-transform');
 const cmputl = mofron.util.component;
 const comutl = mofron.util.common;
 
@@ -27,6 +26,7 @@ module.exports = class extends mofron.class.Effect {
             this.confmng().add("offset",{ type: "size" });
             this.confmng().add("type", { type: "string", init: "center", select: ["center", "left", "right"] });
             /* set config */
+	    this.innerTgt(false);
 	    if (undefined !== prm) {
                 this.config(prm);
             }
@@ -44,29 +44,39 @@ module.exports = class extends mofron.class.Effect {
      */
     contents (cmp) {
         try {
-	    if (true === comutl.isinc(cmp, "Text")) {
-                this.txtpos(cmp);
-		return;
-	    }
-	    let cmp_pos = cmp.style("position");
-	    if ("center" === this.type()) {
-                if (null === cmp_pos) {
-                    cmp.style({ 'display' : 'block' });
-		}
-                this.mgnpos(cmp);
-	    } else {
-                if ("relative" === cmp_pos) {
-		    this.mgnpos(cmp);
-                } else if (("absolute" === cmp_pos) || ("fixed" === cmp_pos)) {
-                    this.lftpos(cmp);
-                } else {
-                    if (null !== cmp.parent()) {
-                        cmp.style({ "position" : "relative" });
-			this.mgnpos(cmp);
-		    } else {
-		        cmp.style({ "position" : "absolute" });
-                        this.lftpos(cmp);
+	    let rdom = cmp.rootDom();
+            for (let ridx in rdom) {
+                if (true === comutl.isinc(cmp, "Text")) {
+		    /* set text component position */
+                    this.txtpos(rdom[ridx]);
+		    continue;
+                }
+                /* set other component position */
+	        let cmp_pos = rdom[ridx].style("position");
+	        if ("center" === this.type()) {
+                    if (null === cmp_pos) {
+		        rdom[ridx].style({ "display" : "block" });
 		    }
+                    this.mgnpos(rdom[ridx]);
+	        } else {
+                    if ("relative" === cmp_pos) {
+		        this.mgnpos(rdom[ridx]);
+                    } else if (("absolute" === cmp_pos) || ("fixed" === cmp_pos)) {
+                        this.lftpos(rdom[ridx]);
+                    } else {
+                        if (null !== cmp.parent()) {
+		            rdom[ridx].style({ "position" : "relative" });
+	                    this.mgnpos(rdom[ridx]);
+		        } else {
+		            rdom[ridx].style({ "position" : "absolute" });
+                            this.lftpos(rdom[ridx]);
+		        }
+		    }
+	        }
+
+		if ( ("flex" === rdom[ridx].parent().style("display")) ||
+		     ("flex" === cmputl.dispbuff(rdom[ridx].parent())) ) {
+                    break;
 		}
 	    }
         } catch (e) {
@@ -78,23 +88,21 @@ module.exports = class extends mofron.class.Effect {
     /**
      * text component position
      * 
-     * @param (mofron-comp-text) effect target component
+     * @param (mofron.class.Dom) dom objedt
      * @type private
      */
-    txtpos (cmp) {
+    txtpos (dom) {
         try {
-            if ( (null !== cmp.childDom().parent()) &&
-                 ('flex' === cmp.childDom().parent().style('display')) ) {
-		this.mgnpos(cmp);
-            } else if (("absolute" === cmp.style("position")) || ("flex" === cmp.style("position"))) {
-	        this.lftpos(cmp);
+	    
+            if ( (null !== dom.parent()) &&
+	         (("flex" === dom.parent().style("display")) || ("flex" === cmputl.dispbuff(dom.parent()))) ) {
+		this.mgnpos(dom);
+            } else if (("absolute" === dom.style("position")) || ("flex" === dom.style("position"))) {
+	        this.lftpos(dom);
 	    } else {
-                cmp.style({ 'text-align': this.type() });
+                dom.style({ 'text-align': this.type() });
                 if (null !== this.offset()) {
-                    cmp.style({
-                        'position' : 'relative',
-                        'left'     : this.offset()
-		    });
+		    dom.style({ "position": "relative", "left": this.offset() });
                 }
             }
         } catch (e) {
@@ -106,39 +114,26 @@ module.exports = class extends mofron.class.Effect {
     /**
      * set margin position
      * 
-     * @param (mofron.class.Component) effect target component
+     * @param (mofron.class.Dom) dom object
      * @type private
      */
-    mgnpos (cmp) {
+    mgnpos (dom) {
         try {
 	    let off = this.offset();
             if ('center' === this.type()) {
-                cmp.style({
-                    'margin-right': 'auto', 'margin-left' : 'auto'
-                });
+                dom.style({ "margin-right": "auto", "margin-left": "auto" });
                 if (null !== off) {
-                    cmp.style({ 'position': 'relative', 'left': off.toString() });
+                    dom.style({ "position": "relative", "left": off });
                 }
-                
-                //let buf = mf.func.getSize(mf.func.cmpSize(cmp,'width'));
-                //let val = eff.getValue(buf.value()/2 + buf.type());
-                //cmp.style({
-                //    'margin-left' : (true === eff.valid()) ? '50%' : null,
-                //    'left'        : '-' + val
-                //});
             } else if ('left' === this.type()) {
-                cmp.style({
-                    'margin-right': 'auto', 'margin-left' : '0rem'
-                });
+                dom.style({ "margin-right": "auto", "margin-left" : "0rem" });
                 if (null !== off) {
-                    cmp.style({ "margin-left" : off });
+                    dom.style({ "margin-left" : off });
 		}
             } else {
-                cmp.style({
-                    'margin-right': '0rem', 'margin-left' : 'auto'
-                });
+                dom.style({ "margin-right": "0rem", "margin-left" : "auto" });
 		if (null !== off) {
-                    cmp.style({ "margin-right" : off });
+                    dom.style({ "margin-right" : off });
 		}
             }
 	} catch (e) {
@@ -150,23 +145,23 @@ module.exports = class extends mofron.class.Effect {
     /**
      * set left position
      *
-     * @param (mofron.class.Component) effect target component
+     * @param (mofron.class.Dom) dom object
      * @type private
      */
-    lftpos (cmp) {
+    lftpos (dom) {
         try {
             let off = this.offset();
             if ('center' === this.type()) {
-                cmp.style({ "left" : "50%" });
+                dom.style({ "left" : "50%" });
 		if ((null === off) || ("%" !== comutl.sizetype(off))) {
-                    cmputl.translate(cmp, "-50%");
+		    dom.style({ "transform" : "translateX(-50%)" }, { bpref : true });
 		} else {
-                    cmputl.translate(cmp, comutl.sizesum("-50%",off));
+		    dom.style({ "transform" : "translateX("+ comutl.sizesum("-50%",off) +")" }, { bpref : true });
 		}
 	    } else if ('left' === this.type()) {
-	        cmp.style({ "left" : (null !== off) ? off : "0rem" });
+	        dom.style({ "left" : (null !== off) ? off : "0rem" });
             } else if ('right' === this.type()) {
-	        cmp.style({ "right" : (null !== off) ? off : "0rem" });
+	        dom.style({ "right" : (null !== off) ? off : "0rem" });
             }
 	} catch (e) {
             console.error(e.stack);
