@@ -17,7 +17,7 @@ module.exports = class extends mofron.class.Effect {
      * @short type,offset
      * @type private
      */
-    constructor (prm) {
+    constructor (p1,p2) {
         try {
             super();
             this.name('HrzPos');
@@ -27,8 +27,8 @@ module.exports = class extends mofron.class.Effect {
             this.confmng().add("type", { type: "string", init: "center", select: ["center", "left", "right"] });
             /* set config */
 	    this.innerTgt(false);
-	    if (undefined !== prm) {
-                this.config(prm);
+	    if (0 < arguments.length) {
+                this.config(p1,p2);
             }
         } catch (e) {
             console.error(e.stack);
@@ -54,11 +54,10 @@ module.exports = class extends mofron.class.Effect {
                 /* set other component position */
 	        let cmp_pos = rdom[ridx].style("position");
 	        if ("center" === this.type()) {
-                    if (null === cmp_pos) {
-		        rdom[ridx].style({ "display" : "block" });
-		    } else if (("fixed" === cmp_pos) || ("absolute" === cmp_pos)) {
+		    if (("fixed" === cmp_pos) || ("absolute" === cmp_pos)) {
                         this.lftpos(rdom[ridx]);
 		    } else {
+		        rdom[ridx].style({ "display" : "block" });
                         this.mgnpos(rdom[ridx]);
 		    }
 	        } else {
@@ -105,7 +104,12 @@ module.exports = class extends mofron.class.Effect {
 	    } else {
                 dom.style({ 'text-align': this.type() });
                 if (null !== this.offset()) {
-		    dom.style({ "position": "relative", "left": this.offset() });
+		    dom.style({ "position": "relative" });
+		    if ("right" !== this.type()) {
+		        dom.style({ "left": this.offset() });
+		    } else {
+                        dom.style({ "right": this.offset() });
+		    }
                 }
             }
         } catch (e) {
