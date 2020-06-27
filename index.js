@@ -4,8 +4,9 @@
  *        the component is positioned specified parameter that is 'center' or 'left' and 'right'.
  * @license MIT
  */
-const cmputl = mofron.util.component;
-const comutl = mofron.util.common;
+const cmputl  = mofron.util.component;
+const comutl  = mofron.util.common;
+const transfm = require("mofron-util-transform");
 
 module.exports = class extends mofron.class.Effect {
     /**
@@ -161,9 +162,9 @@ module.exports = class extends mofron.class.Effect {
             if ('center' === this.type()) {
                 dom.style({ "left" : "50%" });
 		if ((null === off) || ("%" !== comutl.sizetype(off))) {
-		    dom.style({ "transform" : "translateX(-50%)" }, { bpref : true });
+		    transfm(dom, "-50%");
 		} else {
-		    dom.style({ "transform" : "translateX("+ comutl.sizesum("-50%",off) +")" }, { bpref : true });
+		    transfm(dom, comutl.sizesum("-50%",off));
 		}
 	    } else if ('left' === this.type()) {
 	        dom.style({ "left" : (null !== off) ? off : "0rem" });
