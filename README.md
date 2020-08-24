@@ -13,10 +13,10 @@ npm install mofron mofron-effect-hrzpos
 
 # Sample
 ```html
-<require>
+<setting>
     <tag load="mofron-comp-text">Text</tag>
     <tag load="mofron-effect-hrzpos">Hrzpos</tag>
-</require>
+</setting>
 
 <Text effect=Hrzpos:"center">Horizon Position Effect</Text>
 
