@@ -58,7 +58,7 @@ module.exports = class extends mofron.class.Effect {
 		    if (("fixed" === cmp_pos) || ("absolute" === cmp_pos)) {
                         this.lftpos(rdom[ridx]);
 		    } else {
-		        rdom[ridx].style({ "display" : "block" });
+		        rdom[ridx].style({ "display" : "block" }, { "passive": true });
                         this.mgnpos(rdom[ridx]);
 		    }
 	        } else {
