@@ -22,10 +22,14 @@ module.exports = class extends mofron.class.Effect {
         try {
             super();
             this.modname('HrzPos');
-            this.shortForm('type', 'offset');
+            this.shortForm('position', 'offset');
+            
             /* init config */
-            this.confmng().add("offset",{ type: "size" });
-            this.confmng().add("type", { type: "string", init: "center", select: ["center", "left", "right"] });
+            this.confmng().add('offset',   { type: "size" });
+            this.confmng().add('position', { type:"string", init:"center", select:["center", "left", "right"] });
+	    this.confmng().add('style',    { type:'string', init:'auto', select:['auto','margin','transform'] });
+            this.confmng().add('target',   { type:'Dom' });
+
             /* set config */
 	    this.innerTgt(false);
 	    if (0 < arguments.length) {
@@ -54,32 +58,46 @@ module.exports = class extends mofron.class.Effect {
                 }
                 /* set other component position */
 	        let cmp_pos = rdom[ridx].style("position");
-	        if ("center" === this.type()) {
-		    if (("fixed" === cmp_pos) || ("absolute" === cmp_pos)) {
-                        this.lftpos(rdom[ridx]);
-		    } else {
-		        rdom[ridx].style({ "display" : "block" }, { "passive": true });
-                        this.mgnpos(rdom[ridx]);
+		if ("margin" === this.style()) {
+		    if (null !== this.target()) {
+		        this.mgnpos(this.target());
+                        break;
 		    }
-	        } else {
-                    if ("relative" === cmp_pos) {
-		        this.mgnpos(rdom[ridx]);
-                    } else if (("absolute" === cmp_pos) || ("fixed" === cmp_pos)) {
-                        this.lftpos(rdom[ridx]);
-                    } else {
-                        if (null !== cmp.parent()) {
-		            rdom[ridx].style({ "position" : "relative" });
-	                    this.mgnpos(rdom[ridx]);
-		        } else {
-		            rdom[ridx].style({ "position" : "absolute" });
+		    this.mgnpos(rdom[ridx]);
+		} else if ("transform" === this.style()) {
+		    if (null !== this.target()) {
+                        this.lftpos(this.target());
+                        break;
+                    }
+		    this.lftpos(rdom[ridx]);
+		} else {
+	            if ("center" === this.position()) {
+		        if (("fixed" === cmp_pos) || ("absolute" === cmp_pos)) {
                             this.lftpos(rdom[ridx]);
+		        } else {
+		            rdom[ridx].style({ "display" : "block" }, { "passive": true });
+                            this.mgnpos(rdom[ridx]);
 		        }
+	            } else {
+                        if ("relative" === cmp_pos) {
+		            this.mgnpos(rdom[ridx]);
+                        } else if (("absolute" === cmp_pos) || ("fixed" === cmp_pos)) {
+                            this.lftpos(rdom[ridx]);
+                        } else {
+                            if (null !== cmp.parent()) {
+		                rdom[ridx].style({ "position" : "relative" });
+	                        this.mgnpos(rdom[ridx]);
+		            } else {
+		                rdom[ridx].style({ "position" : "absolute" });
+                                this.lftpos(rdom[ridx]);
+		            }
+		        }
+	            }
+                
+		    if ( ("flex" === rdom[ridx].parent().style("display")) ||
+		         ("flex" === cmputl.dispbuff(rdom[ridx].parent())) ) {
+                        break;
 		    }
-	        }
-
-		if ( ("flex" === rdom[ridx].parent().style("display")) ||
-		     ("flex" === cmputl.dispbuff(rdom[ridx].parent())) ) {
-                    break;
 		}
 	    }
         } catch (e) {
@@ -103,10 +121,10 @@ module.exports = class extends mofron.class.Effect {
             } else if (("absolute" === dom.style("position")) || ("flex" === dom.style("position"))) {
 	        this.lftpos(dom);
 	    } else {
-                dom.style({ 'text-align': this.type() });
+                dom.style({ 'text-align': this.position() });
                 if (null !== this.offset()) {
 		    dom.style({ "position": "relative" });
-		    if ("right" !== this.type()) {
+		    if ("right" !== this.position()) {
 		        dom.style({ "left": this.offset() });
 		    } else {
                         dom.style({ "right": this.offset() });
@@ -128,12 +146,12 @@ module.exports = class extends mofron.class.Effect {
     mgnpos (dom) {
         try {
 	    let off = this.offset();
-            if ('center' === this.type()) {
+            if ('center' === this.position()) {
                 dom.style({ "margin-right": "auto", "margin-left": "auto" });
                 if (null !== off) {
                     dom.style({ "position": "relative", "left": off });
                 }
-            } else if ('left' === this.type()) {
+            } else if ('left' === this.position()) {
                 dom.style({ "margin-right": "auto", "margin-left" : "0rem" });
                 if (null !== off) {
                     dom.style({ "margin-left" : off });
@@ -159,16 +177,16 @@ module.exports = class extends mofron.class.Effect {
     lftpos (dom) {
         try {
             let off = this.offset();
-            if ('center' === this.type()) {
+            if ('center' === this.position()) {
                 dom.style({ "left" : "50%" });
 		if ((null === off) || ("%" !== comutl.sizetype(off))) {
 		    transfm(dom, "-50%");
 		} else {
 		    transfm(dom, comutl.sizesum("-50%",off));
 		}
-	    } else if ('left' === this.type()) {
+	    } else if ('left' === this.position()) {
 	        dom.style({ "left" : (null !== off) ? off : "0rem" });
-            } else if ('right' === this.type()) {
+            } else if ('right' === this.position()) {
 	        dom.style({ "right" : (null !== off) ? off : "0rem" });
             }
 	} catch (e) {
@@ -185,10 +203,28 @@ module.exports = class extends mofron.class.Effect {
      * @return (string) position type
      * @type parameter
      */
-    type (prm) {
+    position (prm) {
         try {
-            return this.confmng("type", prm);
+            return this.confmng("position", prm);
 	} catch (e) {
+            console.error(e.stack);
+            throw e;
+        }
+    }
+    
+    style (prm) {
+        try {
+            return this.confmng('style', prm);
+	} catch (e) {
+            console.error(e.stack);
+            throw e;
+        }
+    }
+
+    target (prm) {
+        try {
+            return this.confmng('target', prm);
+        } catch (e) {
             console.error(e.stack);
             throw e;
         }
